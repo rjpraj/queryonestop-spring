@@ -27,7 +27,7 @@ public class SignUpController {
         if(createdUser==null){
             return new ResponseEntity<>("User not created, please try again later !!", HttpStatus.BAD_REQUEST);
         }
-        return new ResponseEntity<>(createdUser,HttpStatus.CREATED);
+        return new ResponseEntity<>(createdUser,HttpStatus.CREATED); // we send user as well as the status of the operation
 
     }
 
