@@ -1,5 +1,6 @@
 package com.query.one.stop.queryonestopspring.configuration;
 
+import com.query.one.stop.queryonestopspring.filter.JwtRequestFilter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,11 +12,19 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 
 @Configuration
 @EnableMethodSecurity
 @EnableWebSecurity
 public class WebSecurityConfiguration {
+
+    private final JwtRequestFilter jwtRequestFilter;
+
+    public WebSecurityConfiguration(JwtRequestFilter jwtRequestFilter) {
+        this.jwtRequestFilter = jwtRequestFilter;
+    }
+
     // create bean of password encoder
     @Bean
     public PasswordEncoder passwordEncoder(){
@@ -28,10 +37,13 @@ public class WebSecurityConfiguration {
                 .requestMatchers("/authentication","/signup")
                 .permitAll()
                 .and().authorizeHttpRequests()
-                .requestMatchers("")
+                .requestMatchers("/api/**")
                 .authenticated()
                 .and().sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS).and().build();
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .addFilterBefore(jwtRequestFilter, UsernamePasswordAuthenticationFilter.class)
+                .build();
     }
 
     @Bean
